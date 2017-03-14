@@ -1,6 +1,6 @@
 {
-    "name": "getodacu/enom-sdk-php",
-    "license": "Proprietary",
+    "name": "agilegeeks/enom-sdk-php",
+    "license": "MIT",
     "authors": [
         {
             "name": "Justin de Leon",
