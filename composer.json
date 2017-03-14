@@ -1,10 +1,14 @@
 {
-    "name": "coreproc/enom-sdk",
+    "name": "getodacu/enom-sdk-php",
     "license": "Proprietary",
     "authors": [
         {
             "name": "Justin de Leon",
             "email": "jusmdeleon@gmail.com"
+        },
+        {
+            "name": "Radu Boncea",
+            "email": "radu.boncea@gmail.com"
         }
     ],
     "require": {
