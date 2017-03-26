@@ -34,6 +34,21 @@ class Domain
         return $response;
     }
 
+    public function check_list($domain_list)
+    {
+        $response = $this->doGetRequest('check', [
+            'DomainList' => $domain_list,
+        ]);
+
+        $response = $this->parseXMLObject($response);
+
+        if ($response->ErrCount > 0) {
+            throw new EnomApiException($response->errors);
+        }
+
+        return $response;
+    }
+
     public function getNameSpinner($sld, $tld, array $options = [])
     {
         $response = $this->doGetRequest('NameSpinner', [
