@@ -205,6 +205,22 @@ class Domain
         return $response;
     }
 
+    public function getNSInformation($sld, $tld)
+    {
+        $response = $this->doGetRequest('GetDNS', [
+            'sld' => $sld,
+            'tld' => $tld,
+        ]);
+
+        $response = $this->parseXMLObject($response);
+
+        if ($response->ErrCount > 0) {
+            throw new EnomApiException($response->errors);
+        }
+
+        return $response;
+    }
+
     private function doGetRequest($command, $additionalParams = [])
     {
         $params = [
