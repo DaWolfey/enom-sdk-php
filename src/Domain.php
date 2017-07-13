@@ -173,6 +173,28 @@ class Domain
         return $response;
     }
 
+    public function ModifyNameservers($sld, $tld, array $extendedAttributes = [])
+    {
+        $params = [
+            'sld' => $sld,
+            'tld' => $tld,
+        ];
+
+        if (count($extendedAttributes)) {
+            $params = array_merge($params, $extendedAttributes);
+        }
+
+        $response = $this->doGetRequest('modifyns', $params);
+
+        $response = $this->parseXMLObject($response);
+
+        if ($response->ErrCount > 0) {
+            throw new EnomApiException($response->errors);
+        }
+
+        return $response;
+    }
+
     public function getContactInformation($sld, $tld)
     {
         $response = $this->doGetRequest('GetContacts', [
