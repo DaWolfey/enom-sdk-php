@@ -9,7 +9,7 @@ class Enom
 
     protected $client;
 
-    public function __construct($userId, $password, $base_url)
+    public function __construct($userId, $password, $base_url, $verify_ssl = true)
     {
         $this->client = new Client([
             'base_url' => $base_url,
@@ -18,7 +18,8 @@ class Enom
                     'uid'          => $userId,
                     'pw'           => $password,
                     'responsetype' => 'xml'
-                ]
+                ],
+                'verify' => $verify_ssl,
             ]
         ]);
     }
