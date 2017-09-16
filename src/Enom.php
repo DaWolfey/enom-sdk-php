@@ -27,4 +27,12 @@ class Enom
     {
         return $this->client;
     }
+
+    public function setResponseType($type)
+    {
+        $options = $this->client->getDefaultOption();
+        $query =  $options['query'];
+        $query['responsetype'] = $type;
+        $this->client->setDefaultOption('query', $query);
+    }
 }

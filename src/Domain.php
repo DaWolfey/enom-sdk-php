@@ -218,15 +218,47 @@ class Domain
         $response = $this->doGetRequest('GetContacts', [
             'sld' => $sld,
             'tld' => $tld,
-        ]);
+        ], true);
 
-        $response = $this->parseXMLObject($response);
+        $response = parse_ini_string($response);
 
-        if ($response->ErrCount > 0) {
-            throw new EnomApiException($response->errors);
+        if (intval($response['ErrCount']) > 0) {
+            throw new EnomApiException(array(
+                'Err1' => $response['Err1'],
+                'Err2' => $response['Err2'],
+                'Err2' => $response['Err3']
+            ));
         }
 
-        return $response;
+        $registrant = array();
+        $admin = array();
+        $tech = array();
+        $billing = array();
+        $aux_billing = array();
+
+        foreach ($response as $k => $v) {
+            if (strpos($k, "Registrant") !== false) {
+                $registrant[substr($k, strlen("Registrant"))] = $v;
+            } elseif (strpos($k, "AuxBilling") !== false) {
+                $aux_billing[substr($k, strlen("AuxBilling"))] = $v;
+            } elseif (strpos($k, "Tech") !== false) {
+                $tech[substr($k, strlen("Tech"))] = $v;
+            } elseif (strpos($k, "Admin") !== false) {
+                $admin[substr($k, strlen("Admin"))] = $v;
+            } elseif (strpos($k, "Billing") !== false) {
+                $billing[substr($k, strlen("Billing"))] = $v;
+            }
+        }
+
+        $data = array(
+            'registrant' => $registrant,
+            'admin' => $admin,
+            'tech' => $tech,
+            'billing' => $billing,
+            'aux_billing' => $aux_billing
+        );
+
+        return $data;
     }
 
     public function getWhoIsContactInformation($sld, $tld)
@@ -262,7 +294,7 @@ class Domain
     }
 
 
-    private function doGetRequest($command, $additionalParams = [])
+    private function doGetRequest($command, $additionalParams = [], $raw = false)
     {
         $params = [
             'command' => $command,
@@ -270,6 +302,11 @@ class Domain
 
         if (count($additionalParams)) {
             $params = array_merge($params, $additionalParams);
+        }
+
+        if ($raw) {
+            $this->enom->setResponseType('raw');
+            return $this->client->get('', ['query' => $params], true)->getBody()->getContents();
         }
 
         return $this->client->get('', ['query' => $params])->xml();
