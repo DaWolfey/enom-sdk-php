@@ -234,13 +234,10 @@ class Domain
         $admin = array();
         $tech = array();
         $billing = array();
-        $aux_billing = array();
 
         foreach ($response as $k => $v) {
             if (strpos($k, "Registrant") !== false) {
                 $registrant[substr($k, strlen("Registrant"))] = $v;
-            } elseif (strpos($k, "AuxBilling") !== false) {
-                $aux_billing[substr($k, strlen("AuxBilling"))] = $v;
             } elseif (strpos($k, "Tech") !== false) {
                 $tech[substr($k, strlen("Tech"))] = $v;
             } elseif (strpos($k, "Admin") !== false) {
@@ -251,14 +248,13 @@ class Domain
         }
 
         $data = array(
-            'registrant' => $registrant,
-            'admin' => $admin,
-            'tech' => $tech,
-            'billing' => $billing,
-            'aux_billing' => $aux_billing
+            'registrant' => (object) $registrant,
+            'admin' => (object) $admin,
+            'tech' => (object) $tech,
+            'billing' => (object) $billing
         );
 
-        return $data;
+        return (object) $data;
     }
 
     public function getWhoIsContactInformation($sld, $tld)
@@ -306,7 +302,9 @@ class Domain
 
         if ($raw) {
             $this->enom->setResponseType('raw');
-            return $this->client->get('', ['query' => $params], true)->getBody()->getContents();
+            $res = $this->client->get('', ['query' => $params], true)->getBody()->getContents();
+            $this->enom->setResponseType('xml');
+            return $res;
         }
 
         return $this->client->get('', ['query' => $params])->xml();
