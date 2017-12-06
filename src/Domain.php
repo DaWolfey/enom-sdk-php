@@ -310,6 +310,27 @@ class Domain
         return $response;
     }
 
+    public function transferIn($sld, $tld, $extendedAttributes = [])
+    {
+        $params = [
+            'sld1' => $sld,
+            'tld1' => $tld,
+            'domaincount' => '1'
+        ];
+
+        if (count($extendedAttributes)) {
+            $params = array_merge($params, $extendedAttributes);
+        }
+        
+        $response = $this->doGetRequest('TP_CreateOrder', $params);
+        $response = $this->parseXMLObject($response);
+
+        if ($response->ErrCount > 0) {
+            throw new EnomApiException($response->errors);
+        }
+
+        return $response;
+    }
 
     private function doGetRequest($command, $additionalParams = [], $raw = false)
     {
