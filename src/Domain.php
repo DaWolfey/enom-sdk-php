@@ -332,6 +332,84 @@ class Domain
         return $response;
     }
 
+    public function setRegLock($sld, $tld, $lock = '0')
+    {
+        $params = [
+            'sld' => $sld,
+            'tld' => $tld,
+            'unlockregistrar' => $lock
+        ];
+
+        $response = $this->doGetRequest('SetRegLock', $params);
+        $response = $this->parseXMLObject($response);
+
+        if ($response->ErrCount > 0) {
+            throw new EnomApiException($response->errors);
+        }
+
+        return $response;
+    }
+
+    public function checkNameserver($nameserver)
+    {
+        $response = $this->doGetRequest('CheckNSStatus', ['CheckNSName' => $nameserver]);
+        $response = $this->parseXMLObject($response);
+
+        if ($response->ErrCount > 0) {
+            throw new EnomApiException($response->errors);
+        }
+
+        return $response;
+    }
+
+    public function registerNameserver($nameserver, $ip)
+    {
+        $params = [
+            'Add' => 'true',
+            'NSName' => $nameserver,
+            'IP' => $ip
+        ];
+
+        $response = $this->doGetRequest('RegisterNameServer', $params);
+        $response = $this->parseXMLObject($response);
+
+        if ($response->ErrCount > 0) {
+            throw new EnomApiException($response->errors);
+        }
+
+        return $response;
+    }
+
+    public function updateNameserver($nameserver, $old_ip, $new_ip)
+    {
+        $params = [
+            'OldIP' => $old_ip,
+            'NewIP' => $new_ip,
+            'NS' => $nameserver
+        ];
+
+        $response = $this->doGetRequest('UpdateNameServer', $params);
+        $response = $this->parseXMLObject($response);
+
+        if ($response->ErrCount > 0) {
+            throw new EnomApiException($response->errors);
+        }
+
+        return $response;
+    }
+
+    public function deleteNameserver($nameserver)
+    {
+        $response = $this->doGetRequest('DeleteNameServer', ['NS' => $nameserver]);
+        $response = $this->parseXMLObject($response);
+
+        if ($response->ErrCount > 0) {
+            throw new EnomApiException($response->errors);
+        }
+
+        return $response;
+    }
+
     private function doGetRequest($command, $additionalParams = [], $raw = false)
     {
         $params = [
