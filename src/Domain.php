@@ -126,6 +126,48 @@ class Domain
         return $response;
     }
 
+    public function renewService($sld, $tld, $extendedAttributes = [])
+    {
+        $params = [
+            'sld' => $sld,
+            'tld' => $tld
+        ];
+
+        if (count($extendedAttributes)) {
+            $params = array_merge($params, $extendedAttributes);
+        }
+
+        $response = $this->doGetRequest('RenewServices', $params);
+        $response = $this->parseXMLObject($response);
+
+        if ($response->ErrCount > 0) {
+            throw new EnomApiException($response->errors);
+        }
+
+        return $response;
+    }
+
+    public function getWPPSInfo($sld, $tld)
+    {
+        $params = [
+            'sld' => $sld,
+            'tld' => $tld
+        ];
+
+        if (count($extendedAttributes)) {
+            $params = array_merge($params, $extendedAttributes);
+        }
+
+        $response = $this->doGetRequest('GetWPPSInfo', $params);
+        $response = $this->parseXMLObject($response);
+
+        if ($response->ErrCount > 0) {
+            throw new EnomApiException($response->errors);
+        }
+
+        return $response;
+    }
+
     public function extend($sld, $tld, $period)
     {
         $response = $this->doGetRequest('extend', [
