@@ -154,10 +154,6 @@ class Domain
             'tld' => $tld
         ];
 
-        if (count($extendedAttributes)) {
-            $params = array_merge($params, $extendedAttributes);
-        }
-
         $response = $this->doGetRequest('GetWPPSInfo', $params);
         $response = $this->parseXMLObject($response);
 
