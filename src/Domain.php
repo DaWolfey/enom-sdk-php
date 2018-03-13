@@ -353,7 +353,8 @@ class Domain
         $params = [
             'sld1' => $sld,
             'tld1' => $tld,
-            'domaincount' => '1'
+            'domaincount' => '1',
+            'ordertype' => 'autoverification'
         ];
 
         if (count($extendedAttributes)) {
