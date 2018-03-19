@@ -449,6 +449,18 @@ class Domain
         return $response;
     }
 
+    public function getBalance()
+    {
+        $response = $this->doGetRequest('GetBalance');
+        $response = $this->parseXMLObject($response);
+
+        if ($response->ErrCount > 0) {
+            throw new EnomApiException($response->errors);
+        }
+
+        return $response;
+    }
+
     private function doGetRequest($command, $additionalParams = [], $raw = false)
     {
         $params = [
