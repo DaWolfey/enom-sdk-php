@@ -182,6 +182,38 @@ class Domain
         return $response;
     }
 
+    public function extendRGP($sld, $tld)
+    {
+        $response = $this->doGetRequest('Extend_RGP', [
+            'sld' => $sld,
+            'tld' => $tld
+        ]);
+
+        $response = $this->parseXMLObject($response);
+
+        if ($response->ErrCount > 0) {
+            throw new EnomApiException($response->errors);
+        }
+
+        return $response;
+    }
+
+    public function updateExpiredDomains($domain, $period)
+    {
+        $response = $this->doGetRequest('UpdateExpiredDomains', [
+            'DomainName' => $domain,
+            'NumYears' => $period
+        ]);
+
+        $response = $this->parseXMLObject($response);
+
+        if ($response->ErrCount > 0) {
+            throw new EnomApiException($response->errors);
+        }
+
+        return $response;
+    }
+
     public function getStatus($sld, $tld, $orderId)
     {
         $response = $this->doGetRequest('GetDomainStatus', [
