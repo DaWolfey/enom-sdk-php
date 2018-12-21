@@ -509,9 +509,20 @@ class Domain
             $res = $this->client->get('', ['query' => $params], true)->getBody()->getContents();
             $this->enom->setResponseType('xml');
             return $res;
+        } else {
+            $res = $this->client->get('', ['query' => $params])->xml();
         }
 
-        return $this->client->get('', ['query' => $params])->xml();
+        if ($this->enom->debug) {
+            // check if running under Codeigniter
+            if (function_exists('log_message')) {
+                log_message('error', print_r($res, true));
+            } else {
+                fwrite(STDERR, print_r($res, true) . PHP_EOL);
+            }
+        }
+
+        return $res;
     }
 
     private function parseXMLObject($object)

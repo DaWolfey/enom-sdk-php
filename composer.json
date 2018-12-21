@@ -9,6 +9,10 @@
         {
             "name": "Radu Boncea",
             "email": "radu.boncea@gmail.com"
+        },
+        {
+            "name": "Alex Gheorghita",
+            "email": "alex@agilegeeks.ro"
         }
     ],
     "require": {

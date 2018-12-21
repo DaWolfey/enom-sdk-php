@@ -45,7 +45,18 @@ class Customer
             $params = array_merge($params, $additionalParams);
         }
 
-        return $this->client->get('', ['query' => $params])->xml();
+        $res = $this->client->get('', ['query' => $params])->xml();
+
+        if ($this->enom->debug) {
+            // check if running under Codeigniter
+            if (function_exists('log_message')) {
+                log_message('error', print_r($res, true));
+            } else {
+                fwrite(STDERR, print_r($res, true) . PHP_EOL);
+            }
+        }
+
+        return $res;
     }
 
     private function parseXMLObject($object)

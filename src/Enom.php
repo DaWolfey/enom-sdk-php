@@ -3,13 +3,14 @@
 namespace Coreproc\Enom;
 
 use GuzzleHttp\Client;
-
+use GuzzleHttp\HandlerStack;
 class Enom
 {
 
     protected $client;
+    public $debug;
 
-    public function __construct($userId, $password, $base_url, $verify_ssl = true)
+    public function __construct($userId, $password, $base_url, $verify_ssl = true, $debug = false)
     {
         $this->client = new Client([
             'base_url' => $base_url,
@@ -22,6 +23,7 @@ class Enom
                 'verify' => $verify_ssl,
             ]
         ]);
+        $this->debug = $debug;
     }
 
     public function getClient()
