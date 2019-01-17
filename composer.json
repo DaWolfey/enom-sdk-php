@@ -18,9 +18,13 @@
     "require": {
         "guzzlehttp/guzzle": "~5.0"
     },
+    "require-dev": {
+        "phpunit/phpunit": "^4.8"
+    },
     "autoload": {
         "psr-4": {
-            "Coreproc\\Enom\\": "src"
+            "Coreproc\\Enom\\": "src",
+            "AgileGeeks\\tests\\": "src/tests"
         }
     },
     "minimum-stability": "stable"

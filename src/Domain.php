@@ -482,6 +482,69 @@ class Domain
         return $response;
     }
 
+    public function addDNSSEC($sld, $tld, $alg, $digest, $digestType, $keyTag, $additionalParams=[])
+    {
+        $params = [
+            'sld' => $sld,
+            'tld' => $tld,
+            'Alg' => $alg,
+            'Digest' => $digest,
+            'DigestType' => $digestType,
+            'KeyTag' => $keyTag
+        ];
+
+        if (count($additionalParams)) {
+            $params = array_merge($params, $additionalParams);
+        }
+
+        $response = $this->doGetRequest('AddDnsSec', $params);
+        $response = $this->parseXMLObject($response);
+
+        if ($response->ErrCount > 0) {
+            throw new EnomApiException($response->errors);
+        }
+
+        return $response;
+    }
+
+    public function getDNSSEC($sld, $tld)
+    {
+        $params = [
+            'sld' => $sld,
+            'tld' => $tld
+        ];
+
+        $response = $this->doGetRequest('GetDnsSec', $params, $raw = True);
+        $response = (object) parse_ini_string($response);
+
+        if ($response->ErrCount > 0) {
+            throw new EnomApiException($response->errors);
+        }
+
+        return $response;
+    }
+
+    public function deleteDNSSEC($sld, $tld, $alg, $digest, $digestType, $keyTag)
+    {
+        $params = [
+            'sld' => $sld,
+            'tld' => $tld,
+            'Alg' => $alg,
+            'Digest' => $digest,
+            'DigestType' => $digestType,
+            'KeyTag' => $keyTag
+        ];
+
+        $response = $this->doGetRequest('DeleteDnsSec', $params);
+        $response = $this->parseXMLObject($response);
+
+        if ($response->ErrCount > 0) {
+            throw new EnomApiException($response->errors);
+        }
+
+        return $response;
+    }
+
     public function getBalance()
     {
         $response = $this->doGetRequest('GetBalance');
