@@ -198,7 +198,7 @@ class Domain
         return $response;
     }
 
-    
+
     public function updateExpiredDomains($domain, $period)
     {
         $response = $this->doGetRequest('UpdateExpiredDomains', [
@@ -312,7 +312,7 @@ class Domain
             'tld' => $tld,
         ], true);
 
-        $response = parse_ini_string($response);
+        $response = parse_ini_string($response, false, INI_SCANNER_RAW);
 
         if (intval($response['ErrCount']) > 0) {
             throw new EnomApiException(array(
@@ -393,7 +393,7 @@ class Domain
         if (count($extendedAttributes)) {
             $params = array_merge($params, $extendedAttributes);
         }
-        
+
         $response = $this->doGetRequest('TP_CreateOrder', $params);
         $response = $this->parseXMLObject($response);
 
@@ -515,7 +515,7 @@ class Domain
         ];
 
         $response = $this->doGetRequest('GetDnsSec', $params, $raw = True);
-        $response = (object) parse_ini_string($response);
+        $response = (object) parse_ini_string($response, false, INI_SCANNER_RAW);
 
         if ($response->ErrCount > 0) {
             throw new EnomApiException($response->errors);
