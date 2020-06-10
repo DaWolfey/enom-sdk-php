@@ -233,9 +233,33 @@ class Domain
         return $response;
     }
 
-    public function getList()
+    public function getList($tab='IOwn', $domain='')
     {
-        $response = $this->doGetRequest('GetDomains');
+        $response = $this->doGetRequest('GetDomains', [
+            'Tab' => $tab,
+            'Domain' => $domain
+        ]);
+
+        $response = $this->parseXMLObject($response);
+
+        if ($response->ErrCount > 0) {
+            throw new EnomApiException($response->errors);
+        }
+
+        return $response;
+    }
+
+    public function getExpiredDomain($fqdn)
+    {
+        $response = $this->doGetRequest('GetDomains', [
+            'Tab' => 'ExpiredDomains',
+            'Domain' => $fqdn
+        ]);
+        $response = $this->parseXMLObject($response);
+
+        if ($response->ErrCount > 0) {
+            throw new EnomApiException($response->errors);
+        }
 
         return $response;
     }
@@ -243,6 +267,11 @@ class Domain
     public function getExpired()
     {
         $response = $this->doGetRequest('GetExpiredDomains');
+        $response = $this->parseXMLObject($response);
+
+        if ($response->ErrCount > 0) {
+            throw new EnomApiException($response->errors);
+        }
 
         return $response;
     }
