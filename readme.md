@@ -1,14 +1,14 @@
 # Installation
 
-Add this on your `composer.json`:
+Since this package isn't on packegiest you need to add this repo to your `composer.json`:
 
     "require": {
         "coreproc/enom-sdk-php": "dev-master"
     },
     "repositories": [
         {
-            "type": "vcs",
-            "url":  "https://git.coreproc.ph/coreproc/enom-sdk-php.git"
+            "type": "git",
+            "url":  "https://github.com/DaWolfey/enom-sdk-php.git"
         }
     ]
     

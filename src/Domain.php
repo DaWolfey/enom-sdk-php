@@ -10,22 +10,17 @@ class Domain
      */
     private $enom;
 
-    private $client;
-
     public function __construct(Enom $enom)
     {
         $this->enom = $enom;
-        $this->client = $enom->getClient();
     }
 
     public function check($sld, $tld)
     {
-        $response = $this->doGetRequest('check', [
+        $response = $this->enom->doGetRequest('check', [
             'sld' => $sld,
             'tld' => $tld,
         ]);
-
-        $response = $this->parseXMLObject($response);
 
         if ($response->ErrCount > 0) {
             throw new EnomApiException($response->errors);
@@ -36,11 +31,9 @@ class Domain
 
     public function check_list($domain_list)
     {
-        $response = $this->doGetRequest('check', [
+        $response = $this->enom->doGetRequest('check', [
             'DomainList' => $domain_list,
         ]);
-
-        $response = $this->parseXMLObject($response);
 
         if ($response->ErrCount > 0) {
             throw new EnomApiException($response->errors);
@@ -51,15 +44,13 @@ class Domain
 
     public function getNameSpinner($sld, $tld, array $options = [])
     {
-        $response = $this->doGetRequest('NameSpinner', [
-            'sld'        => $sld,
-            'tld'        => $tld,
-            'UseHyphens' => $options['useHyphens'] ?: true,
-            'UseNumbers' => $options['useNumbers'] ?: true,
-            'MaxResults' => $options['maxResults'] ?: 10,
+        $response = $this->enom->doGetRequest('NameSpinner', [
+            'sld' => $sld,
+            'tld' => $tld,
+            'UseHyphens' => $options['useHyphens'] ?? true,
+            'UseNumbers' => $options['useNumbers'] ?? true,
+            'MaxResults' => $options['maxResults'] ?? 10,
         ]);
-
-        $response = $this->parseXMLObject($response);
 
         if ($response->ErrCount > 0) {
             throw new EnomApiException($response->errors);
@@ -70,13 +61,11 @@ class Domain
 
     public function getExtendedAttributes($tld)
     {
-        $response = $this->doGetRequest('GetExtAttributes', [
+        $response = $this->enom->doGetRequest('GetExtAttributes', [
             'tld' => $tld,
         ]);
 
-        $response = $this->parseXMLObject($response);
-
-        if ( ! isset($response->Attributes)) {
+        if (!isset($response->Attributes)) {
             throw new \Exception('Invalid TLD');
         }
 
@@ -94,9 +83,7 @@ class Domain
             $params = array_merge($params, $extendedAttributes);
         }
 
-        $response = $this->doGetRequest('Purchase', $params);
-
-        $response = $this->parseXMLObject($response);
+        $response = $this->enom->doGetRequest('Purchase', $params);
 
         if ($response->ErrCount > 0) {
             throw new EnomApiException($response->errors);
@@ -116,8 +103,7 @@ class Domain
             $params = array_merge($params, $extendedAttributes);
         }
 
-        $response = $this->doGetRequest('PurchaseServices', $params);
-        $response = $this->parseXMLObject($response);
+        $response = $this->enom->doGetRequest('PurchaseServices', $params);
 
         if ($response->ErrCount > 0) {
             throw new EnomApiException($response->errors);
@@ -137,8 +123,7 @@ class Domain
             $params = array_merge($params, $extendedAttributes);
         }
 
-        $response = $this->doGetRequest('RenewServices', $params);
-        $response = $this->parseXMLObject($response);
+        $response = $this->enom->doGetRequest('RenewServices', $params);
 
         if ($response->ErrCount > 0) {
             throw new EnomApiException($response->errors);
@@ -154,8 +139,7 @@ class Domain
             'tld' => $tld
         ];
 
-        $response = $this->doGetRequest('GetWPPSInfo', $params);
-        $response = $this->parseXMLObject($response);
+        $response = $this->enom->doGetRequest('GetWPPSInfo', $params);
 
         if ($response->ErrCount > 0) {
             throw new EnomApiException($response->errors);
@@ -166,14 +150,12 @@ class Domain
 
     public function extend($sld, $tld, $period)
     {
-        $response = $this->doGetRequest('extend', [
+        $response = $this->enom->doGetRequest('extend', [
             'sld' => $sld,
             'tld' => $tld,
             'NumYears' => $period,
             'OverrideOrder' => 1
         ]);
-
-        $response = $this->parseXMLObject($response);
 
         if ($response->ErrCount > 0) {
             throw new EnomApiException($response->errors);
@@ -184,12 +166,10 @@ class Domain
 
     public function extendRGP($sld, $tld)
     {
-        $response = $this->doGetRequest('Extend_RGP', [
+        $response = $this->enom->doGetRequest('Extend_RGP', [
             'sld' => $sld,
             'tld' => $tld
         ]);
-
-        $response = $this->parseXMLObject($response);
 
         if ($response->ErrCount > 0) {
             throw new EnomApiException($response->errors);
@@ -201,12 +181,10 @@ class Domain
 
     public function updateExpiredDomains($domain, $period)
     {
-        $response = $this->doGetRequest('UpdateExpiredDomains', [
+        $response = $this->enom->doGetRequest('UpdateExpiredDomains', [
             'DomainName' => $domain,
             'NumYears' => $period
         ]);
-
-        $response = $this->parseXMLObject($response);
 
         if ($response->ErrCount > 0) {
             throw new EnomApiException($response->errors);
@@ -217,14 +195,12 @@ class Domain
 
     public function getStatus($sld, $tld, $orderId)
     {
-        $response = $this->doGetRequest('GetDomainStatus', [
-            'sld'       => $sld,
-            'tld'       => $tld,
-            'orderid'   => $orderId,
+        $response = $this->enom->doGetRequest('GetDomainStatus', [
+            'sld' => $sld,
+            'tld' => $tld,
+            'orderid' => $orderId,
             'ordertype' => 'purchase',
         ]);
-
-        $response = $this->parseXMLObject($response);
 
         if ($response->ErrCount > 0) {
             throw new EnomApiException($response->errors);
@@ -233,29 +209,42 @@ class Domain
         return $response;
     }
 
-    public function getList($tab='IOwn', $domain='')
+    public function getList($tab = 'IOwn', $domain = '')
     {
-        $response = $this->doGetRequest('GetDomains', [
+
+        $response = $this->enom->doGetRequest('GetDomains', [
             'Tab' => $tab,
             'Domain' => $domain
         ]);
 
-        $response = $this->parseXMLObject($response);
-
-        if ($response->ErrCount > 0) {
-            throw new EnomApiException($response->errors);
-        }
-
         return $response;
     }
 
+    public function GetAllDomains()
+    {
+        //We only get a max of 100 domains per call with AdvancedDomainSearch, so we make a loop.
+        //NextPosition is 1 when there are no more domains to receive, but if there is only one domain in total then we're done too.
+
+        $domains = [];
+        $position = 1;
+        do {
+            $response = $this->enom->doGetRequest('AdvancedDomainSearch', ['StartPosition' => $position]);
+
+            $totalresults = $response->DomainSearch->TotalResults;
+            $domains = array_merge($domains, (array) $response->DomainSearch->Domains->Domain);
+            $position = $response->DomainSearch->NextPosition;
+        } while ($totalresults == 1 || $position != 1);
+
+        return $domains;
+    }
+
+
     public function getExpiredDomain($fqdn)
     {
-        $response = $this->doGetRequest('GetDomains', [
+        $response = $this->enom->doGetRequest('GetDomains', [
             'Tab' => 'ExpiredDomains',
             'Domain' => $fqdn
         ]);
-        $response = $this->parseXMLObject($response);
 
         if ($response->ErrCount > 0) {
             throw new EnomApiException($response->errors);
@@ -266,8 +255,7 @@ class Domain
 
     public function getExpired()
     {
-        $response = $this->doGetRequest('GetExpiredDomains');
-        $response = $this->parseXMLObject($response);
+        $response = $this->enom->doGetRequest('GetExpiredDomains');
 
         if ($response->ErrCount > 0) {
             throw new EnomApiException($response->errors);
@@ -278,12 +266,10 @@ class Domain
 
     public function getInfo($sld, $tld)
     {
-        $response = $this->doGetRequest('GetDomainInfo', [
+        $response = $this->enom->doGetRequest('GetDomainInfo', [
             'sld' => $sld,
             'tld' => $tld
         ]);
-
-        $response = $this->parseXMLObject($response);
 
         if ($response->ErrCount > 0) {
             throw new EnomApiException($response->errors);
@@ -301,9 +287,7 @@ class Domain
 
         $params = array_merge($params, $contactInfo);
 
-        $response = $this->doGetRequest('Contacts', $params);
-
-        $response = $this->parseXMLObject($response);
+        $response = $this->enom->doGetRequest('Contacts', $params);
 
         if ($response->ErrCount > 0) {
             throw new EnomApiException($response->errors);
@@ -323,9 +307,7 @@ class Domain
             $params = array_merge($params, $extendedAttributes);
         }
 
-        $response = $this->doGetRequest('modifyns', $params);
-
-        $response = $this->parseXMLObject($response);
+        $response = $this->enom->doGetRequest('modifyns', $params);
 
         if ($response->ErrCount > 0) {
             throw new EnomApiException($response->errors);
@@ -336,56 +318,24 @@ class Domain
 
     public function getContactInformation($sld, $tld)
     {
-        $response = $this->doGetRequest('GetContacts', [
+        $response = $this->enom->doGetRequest('GetContacts', [
             'sld' => $sld,
             'tld' => $tld,
-        ], true);
+        ], false);
 
-        $response = parse_ini_string($response, false, INI_SCANNER_RAW);
-
-        if (intval($response['ErrCount']) > 0) {
-            throw new EnomApiException(array(
-                'Err1' => $response['Err1'],
-                'Err2' => $response['Err2'],
-                'Err2' => $response['Err3']
-            ));
+        if ($response->ErrCount > 0) {
+            throw new EnomApiException($response->errors);
         }
 
-        $registrant = array();
-        $admin = array();
-        $tech = array();
-        $billing = array();
-
-        foreach ($response as $k => $v) {
-            if (strpos($k, "Registrant") !== false) {
-                $registrant[substr($k, strlen("Registrant"))] = $v;
-            } elseif (strpos($k, "Tech") !== false) {
-                $tech[substr($k, strlen("Tech"))] = $v;
-            } elseif (strpos($k, "Admin") !== false) {
-                $admin[substr($k, strlen("Admin"))] = $v;
-            } elseif (strpos($k, "Billing") !== false) {
-                $billing[substr($k, strlen("Billing"))] = $v;
-            }
-        }
-
-        $data = array(
-            'registrant' => (object) $registrant,
-            'admin' => (object) $admin,
-            'tech' => (object) $tech,
-            'billing' => (object) $billing
-        );
-
-        return (object) $data;
+        return $response;
     }
 
     public function getWhoIsContactInformation($sld, $tld)
     {
-        $response = $this->doGetRequest('GetWhoIsContact', [
+        $response = $this->enom->doGetRequest('GetWhoIsContact', [
             'sld' => $sld,
             'tld' => $tld,
         ]);
-
-        $response = $this->parseXMLObject($response);
 
         if ($response->ErrCount > 0) {
             throw new EnomApiException($response->errors);
@@ -396,12 +346,10 @@ class Domain
 
     public function getNSInformation($sld, $tld)
     {
-        $response = $this->doGetRequest('GetDNS', [
+        $response = $this->enom->doGetRequest('GetDNS', [
             'sld' => $sld,
             'tld' => $tld,
         ]);
-
-        $response = $this->parseXMLObject($response);
 
         if ($response->ErrCount > 0) {
             throw new EnomApiException($response->errors);
@@ -419,12 +367,9 @@ class Domain
             'ordertype' => 'autoverification'
         ];
 
-        if (count($extendedAttributes)) {
-            $params = array_merge($params, $extendedAttributes);
-        }
+        $params = array_merge($params, $extendedAttributes);
 
-        $response = $this->doGetRequest('TP_CreateOrder', $params);
-        $response = $this->parseXMLObject($response);
+        $response = $this->enom->doGetRequest('TP_CreateOrder', $params);
 
         if ($response->ErrCount > 0) {
             throw new EnomApiException($response->errors);
@@ -441,8 +386,7 @@ class Domain
             'unlockregistrar' => $lock
         ];
 
-        $response = $this->doGetRequest('SetRegLock', $params);
-        $response = $this->parseXMLObject($response);
+        $response = $this->enom->doGetRequest('SetRegLock', $params);
 
         if ($response->ErrCount > 0) {
             throw new EnomApiException($response->errors);
@@ -453,8 +397,7 @@ class Domain
 
     public function checkNameserver($nameserver)
     {
-        $response = $this->doGetRequest('CheckNSStatus', ['CheckNSName' => $nameserver]);
-        $response = $this->parseXMLObject($response);
+        $response = $this->enom->doGetRequest('CheckNSStatus', ['CheckNSName' => $nameserver]);
 
         if ($response->ErrCount > 0) {
             throw new EnomApiException($response->errors);
@@ -471,8 +414,7 @@ class Domain
             'IP' => $ip
         ];
 
-        $response = $this->doGetRequest('RegisterNameServer', $params);
-        $response = $this->parseXMLObject($response);
+        $response = $this->enom->doGetRequest('RegisterNameServer', $params);
 
         if ($response->ErrCount > 0) {
             throw new EnomApiException($response->errors);
@@ -489,8 +431,7 @@ class Domain
             'NS' => $nameserver
         ];
 
-        $response = $this->doGetRequest('UpdateNameServer', $params);
-        $response = $this->parseXMLObject($response);
+        $response = $this->enom->doGetRequest('UpdateNameServer', $params);
 
         if ($response->ErrCount > 0) {
             throw new EnomApiException($response->errors);
@@ -501,8 +442,7 @@ class Domain
 
     public function deleteNameserver($nameserver)
     {
-        $response = $this->doGetRequest('DeleteNameServer', ['NS' => $nameserver]);
-        $response = $this->parseXMLObject($response);
+        $response = $this->enom->doGetRequest('DeleteNameServer', ['NS' => $nameserver]);
 
         if ($response->ErrCount > 0) {
             throw new EnomApiException($response->errors);
@@ -511,7 +451,7 @@ class Domain
         return $response;
     }
 
-    public function addDNSSEC($sld, $tld, $alg, $digest, $digestType, $keyTag, $additionalParams=[])
+    public function addDNSSEC($sld, $tld, $alg, $digest, $digestType, $keyTag, $additionalParams = [])
     {
         $params = [
             'sld' => $sld,
@@ -522,12 +462,10 @@ class Domain
             'KeyTag' => $keyTag
         ];
 
-        if (count($additionalParams)) {
-            $params = array_merge($params, $additionalParams);
-        }
 
-        $response = $this->doGetRequest('AddDnsSec', $params);
-        $response = $this->parseXMLObject($response);
+        $params = array_merge($params, $additionalParams);
+
+        $response = $this->enom->doGetRequest('AddDnsSec', $params);
 
         if ($response->ErrCount > 0) {
             throw new EnomApiException($response->errors);
@@ -543,8 +481,7 @@ class Domain
             'tld' => $tld
         ];
 
-        $response = $this->doGetRequest('GetDnsSec', $params, $raw = True);
-        $response = (object) parse_ini_string($response, false, INI_SCANNER_RAW);
+        $response = $this->enom->doGetRequest('GetDnsSec', $params);
 
         if ($response->ErrCount > 0) {
             throw new EnomApiException($response->errors);
@@ -564,8 +501,7 @@ class Domain
             'KeyTag' => $keyTag
         ];
 
-        $response = $this->doGetRequest('DeleteDnsSec', $params);
-        $response = $this->parseXMLObject($response);
+        $response = $this->enom->doGetRequest('DeleteDnsSec', $params);
 
         if ($response->ErrCount > 0) {
             throw new EnomApiException($response->errors);
@@ -576,8 +512,7 @@ class Domain
 
     public function getBalance()
     {
-        $response = $this->doGetRequest('GetBalance');
-        $response = $this->parseXMLObject($response);
+        $response = $this->enom->doGetRequest('GetBalance');
 
         if ($response->ErrCount > 0) {
             throw new EnomApiException($response->errors);
@@ -586,39 +521,4 @@ class Domain
         return $response;
     }
 
-    private function doGetRequest($command, $additionalParams = [], $raw = false)
-    {
-        $params = [
-            'command' => $command,
-        ];
-
-        if (count($additionalParams)) {
-            $params = array_merge($params, $additionalParams);
-        }
-
-        if ($raw) {
-            $this->enom->setResponseType('raw');
-            $res = $this->client->get('', ['query' => $params], true)->getBody()->getContents();
-            $this->enom->setResponseType('xml');
-            return $res;
-        } else {
-            $res = $this->client->get('', ['query' => $params])->xml();
-        }
-
-        if ($this->enom->debug) {
-            // check if running under Codeigniter
-            if (function_exists('log_message')) {
-                log_message('error', print_r($res, true));
-            } else {
-                fwrite(STDERR, print_r($res, true) . PHP_EOL);
-            }
-        }
-
-        return $res;
-    }
-
-    private function parseXMLObject($object)
-    {
-        return json_decode(json_encode($object));
-    }
 }

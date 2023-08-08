@@ -4,25 +4,28 @@ namespace Coreproc\Enom;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\HandlerStack;
+
 class Enom
 {
 
     protected $client;
     public $debug;
 
-    public function __construct($userId, $password, $base_url, $verify_ssl = true, $debug = false)
+    public $base_params;
+
+    public function __construct($userId, $password, $base_uri, $verify_ssl = true, $debug = false)
     {
         $this->client = new Client([
-            'base_url' => $base_url,
-            'defaults' => [
-                "query" => [
-                    'uid'          => $userId,
-                    'pw'           => $password,
-                    'responsetype' => 'xml'
-                ],
-                'verify' => $verify_ssl,
-            ]
+            'base_uri' => $base_uri,
+            'verify' => $verify_ssl,
         ]);
+
+        $this->base_params = [
+            'uid' => $userId,
+            'pw' => $password,
+            'responsetype' => 'xml'
+        ];
+
         $this->debug = $debug;
     }
 
@@ -33,9 +36,51 @@ class Enom
 
     public function setResponseType($type)
     {
-        $options = $this->client->getDefaultOption();
-        $query =  $options['query'];
-        $query['responsetype'] = $type;
-        $this->client->setDefaultOption('query', $query);
+        $this->base_params['responsetype'] = $type;
+
+    }
+
+    /**
+     * @param $command
+     * @param $additionalParams
+     * @param $raw
+     * @return string|\SimpleXMLElement
+     * @throws \GuzzleHttp\Exception\GuzzleException|EnomApiException
+     * @throws \Exception
+     */
+    public function doGetRequest($command, $additionalParams = [], $raw = false)
+    {
+        $params = [
+            'command' => $command,
+        ];
+
+        $params = array_merge($this->base_params, $params, $additionalParams);
+
+
+        if ($raw) {
+            $this->setResponseType('raw');
+        } else {
+            $this->setResponseType('xml');
+        }
+
+        $response = $this->client->get('', ['query' => $params], true);
+
+        if ($response->getStatusCode() !== 200) {
+            throw new EnomApiException($response->getStatusCode().' - '.$response->getReasonPhrase());
+        }
+
+        $body = $response->getBody()->getContents();
+
+        if (!$raw) {
+            $body = new \SimpleXMLElement($body);
+            return $this->ValidateXML($body);
+        }
+
+        return $body;
+    }
+
+    public function ValidateXML($object)
+    {
+        return json_decode(json_encode($object));
     }
 }
