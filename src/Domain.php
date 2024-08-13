@@ -2,6 +2,8 @@
 
 namespace Coreproc\Enom;
 
+use GuzzleHttp\Exception\GuzzleException;
+
 class Domain
 {
 
@@ -209,6 +211,14 @@ class Domain
         return $response;
     }
 
+    /**
+     * @param $tab
+     * @param $domain
+     * @return \SimpleXMLElement|string
+     * @throws EnomApiException
+     * @throws GuzzleException
+     * @deprecated Use GetAllDomains instead
+     */
     public function getList($tab = 'IOwn', $domain = '')
     {
 
@@ -220,7 +230,11 @@ class Domain
         return $response;
     }
 
-    public function GetAllDomains()
+    /**
+     * @throws GuzzleException
+     * @throws EnomApiException
+     */
+    public function GetAllDomains(): array
     {
         //We only get a max of 100 domains per call with AdvancedDomainSearch, so we make a loop.
         //NextPosition is 1 when there are no more domains to receive, but if there is only one domain in total then we're done too.
@@ -229,6 +243,9 @@ class Domain
         $position = 1;
         do {
             $response = $this->enom->doGetRequest('AdvancedDomainSearch', ['StartPosition' => $position]);
+            if ($response->ErrCount > 0) {
+                throw new EnomApiException($response->errors);
+            }
 
             $totalresults = $response->DomainSearch->TotalResults;
             $domains = array_merge($domains, (array) $response->DomainSearch->Domains->Domain);

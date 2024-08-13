@@ -72,7 +72,8 @@ class Enom
         $body = $response->getBody()->getContents();
 
         if (!$raw) {
-            $body = new \SimpleXMLElement($body);
+            $body = new \SimpleXMLElement($body,LIBXML_NOCDATA);
+
             return $this->ValidateXML($body);
         }
 
