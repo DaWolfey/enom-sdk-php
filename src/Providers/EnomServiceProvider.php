@@ -5,6 +5,7 @@ namespace Coreproc\Enom\Providers;
 use Coreproc\Enom\Domain;
 use Coreproc\Enom\Enom;
 use Coreproc\Enom\Tld;
+use Coreproc\Enom\Transfer;
 use Illuminate\Support\ServiceProvider;
 
 class EnomServiceProvider extends ServiceProvider
@@ -27,6 +28,10 @@ class EnomServiceProvider extends ServiceProvider
 
         $this->app->bind('domain', function () use ($enom) {
             return new Domain($enom);
+        });
+
+        $this->app->bind('transfer', function () use ($enom) {
+            return new Transfer($enom);
         });
     }
 

@@ -84,4 +84,12 @@ class Enom
     {
         return json_decode(json_encode($object));
     }
+
+    public function BoolToString(bool $bool) : string {
+        return $bool ? 'True' : 'False';
+    }
+
+    public function BoolToIntString(bool $bool) : string {
+        return $bool ? '1' : '0';
+    }
 }

@@ -395,12 +395,12 @@ class Domain
         return $response;
     }
 
-    public function setRegLock($sld, $tld, $lock = '0')
+    public function setRegLock($sld, $tld, bool $lock)
     {
         $params = [
             'sld' => $sld,
             'tld' => $tld,
-            'unlockregistrar' => $lock
+            'unlockregistrar' => $this->enom->BoolToIntString($lock)
         ];
 
         $response = $this->enom->doGetRequest('SetRegLock', $params);
